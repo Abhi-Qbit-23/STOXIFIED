@@ -1,0 +1,6 @@
+{
+  "name": "StockSwipe News",
+  "description": "A mobile-first news aggregator app that allows users to swipe through AI-summarized stock market news articles and save interesting ones for later.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}

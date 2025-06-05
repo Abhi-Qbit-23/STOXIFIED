@@ -1,0 +1,31 @@
+{
+  "name": "stockswipe-news",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+  "start": "vite",
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+  "format": "prettier --write .",
+  "format:check": "prettier --check .",
+  "clean": "rimraf build",
+  "clean:cache": "rimraf node_modules/.cache",
+  "clean:all": "npm run clean && npm run clean:cache"
+},
+  "dependencies": {
+    "@google/genai": "^1.2.0",
+    "@types/react": "^18.3.23",
+    "@types/react-dom": "^18.3.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-tinder-card": "^1.6.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "~5.7.2",
+    "vite": "^6.2.0"
+  }
+}
