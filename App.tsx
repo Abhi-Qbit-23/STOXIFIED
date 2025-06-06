@@ -1,12 +1,9 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { SwipeDeck } from './components/SwipeDeck';
 import { SavedNewsScreen } from './components/SavedNewsScreen';
 import { Header } from './components/Header';
 import { Nav } from './components/Nav';
 import type { NewsArticle } from './types';
-import { mockNewsService } from './services/newsService';
-import { geminiService } from './services/geminiService';
 import { LoadingSpinner } from './components/icons/LoadingSpinner';
 
 export enum AppView {
@@ -24,45 +21,34 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadAndSummarizeNews = useCallback(async () => {
+  const loadNewsFromAPI = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const rawArticles = mockNewsService.getMockRawArticles(7); // Fetch 7 raw articles
-      const articlesWithSummaries: NewsArticle[] = [];
-
-      for (const rawArticle of rawArticles) {
-        // Initialize with isLoadingSummary true
-        articlesWithSummaries.push({ ...rawArticle, summary: '', isLoadingSummary: true });
-      }
-      setNewsArticles(articlesWithSummaries); // Set articles immediately for UI responsiveness
-
-      // Sequentially summarize to avoid overwhelming UI updates if done in parallel and updating state each time
-      const summarizedArticles = [...articlesWithSummaries];
-      for (let i = 0; i < summarizedArticles.length; i++) {
-        const article = summarizedArticles[i];
-        try {
-          // API_KEY is now used directly in geminiService
-          const summary = await geminiService.summarizeNews(article.fullText);
-          summarizedArticles[i] = { ...article, summary, isLoadingSummary: false };
-          setNewsArticles([...summarizedArticles]); // Update state after each summary
-        } catch (summaryError) {
-          console.error(`Failed to summarize article ${article.id}:`, summaryError);
-          summarizedArticles[i] = { ...article, summary: "Could not load summary.", isLoadingSummary: false };
-          setNewsArticles([...summarizedArticles]);
-        }
-      }
+      const response = await fetch('http://localhost:8000/news');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const data = await response.json();
+      const parsedNews: NewsArticle[] = data.map((item: any) => ({
+        id: String(item.id),
+        headline: item.headline,
+        url: item.url,
+        summary: item.summary || '',
+        source: item.source || '',
+        scraped_at: item.scraped_at || '',
+        isLoadingSummary: false,
+      }));
+      setNewsArticles(parsedNews);
     } catch (e) {
       console.error("Failed to load news:", e);
       setError("Failed to load news. Please try again later.");
     } finally {
       setIsLoading(false);
     }
-  }, []); // Removed API_KEY from dependencies
+  }, []);
 
   useEffect(() => {
-    loadAndSummarizeNews();
-  }, [loadAndSummarizeNews]);
+    loadNewsFromAPI();
+  }, [loadNewsFromAPI]);
 
   useEffect(() => {
     localStorage.setItem('savedStockNews', JSON.stringify(savedArticles));
@@ -81,10 +67,16 @@ const App: React.FC = () => {
   const handleUnsaveArticle = (articleId: string) => {
     setSavedArticles(prev => prev.filter(a => a.id !== articleId));
   };
-  
+
   const handleRefresh = () => {
-    setNewsArticles([]); // Clear current articles
-    loadAndSummarizeNews();
+    setNewsArticles([]);
+    loadNewsFromAPI();
+  };
+
+  // Button-controlled swipe
+  const handleButtonSwipe = (direction: 'left' | 'right') => {
+    if (newsArticles.length === 0) return;
+    handleSwipe(direction, newsArticles[0].id);
   };
 
   return (
@@ -101,25 +93,39 @@ const App: React.FC = () => {
           <p>Loading latest news...</p>
         </div>
       )}
-      
+
       <main className="flex-grow overflow-hidden p-4 flex flex-col">
         {currentView === AppView.SwipeDeck && newsArticles.length > 0 && (
-          <SwipeDeck
-            articles={newsArticles}
-            onSwipe={handleSwipe}
-          />
+          <>
+            <SwipeDeck articles={newsArticles} onSwipe={handleSwipe} />
+
+            {/* ✅ Swipe Buttons */}
+            <div className="flex justify-around mt-6">
+              <button
+                onClick={() => handleButtonSwipe('left')}
+                className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Skip 👎
+              </button>
+              <button
+                onClick={() => handleButtonSwipe('right')}
+                className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              >
+                Save 👍
+              </button>
+            </div>
+          </>
         )}
+
         {currentView === AppView.SwipeDeck && !isLoading && newsArticles.length === 0 && !error && (
-           <div className="flex-grow flex flex-col items-center justify-center text-neutral-500">
-             <p className="text-xl">No more news for now!</p>
-             <p>Check back later or refresh.</p>
-           </div>
+          <div className="flex-grow flex flex-col items-center justify-center text-neutral-500">
+            <p className="text-xl">No more news for now!</p>
+            <p>Check back later or refresh.</p>
+          </div>
         )}
+
         {currentView === AppView.SavedNews && (
-          <SavedNewsScreen
-            savedArticles={savedArticles}
-            onUnsave={handleUnsaveArticle}
-          />
+          <SavedNewsScreen savedArticles={savedArticles} onUnsave={handleUnsaveArticle} />
         )}
       </main>
       <Nav currentView={currentView} setCurrentView={setCurrentView} />
