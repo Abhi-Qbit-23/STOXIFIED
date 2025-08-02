@@ -1,9 +1,17 @@
-
-import type { NewsArticle } from '../types';
-
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
-const mockRawArticlesData = [
+interface MockArticleData {
+  id: string;
+  headline: string;
+  fullText: string;
+  source: string;
+  timestamp: string;
+  category: string;
+  ticker?: string;
+  logoUrl?: string;
+}
+
+const mockRawArticlesData: Omit<MockArticleData, 'id'>[] = [
   {
     headline: "Tech Giant 'InnovateCorp' Surges 15% After Announcing Breakthrough AI Chip",
     fullText: "InnovateCorp (Ticker: INVC) saw its stock price skyrocket by 15% in early trading today following the much-anticipated announcement of its new 'Prometheus' AI chip. The company claims Prometheus is 50% faster and 30% more energy-efficient than current market leaders. Analysts predict this could significantly disrupt the AI hardware market, currently dominated by Nvidia and AMD. The news also positively impacted semiconductor ETFs. The launch event highlighted several partnerships with major cloud providers who plan to integrate Prometheus into their data centers within the next six months. This development is expected to boost InnovateCorp's Q4 earnings substantially.",
@@ -11,7 +19,7 @@ const mockRawArticlesData = [
     timestamp: "2024-07-28T09:30:00Z",
     category: "STOCKS",
     ticker: "INVC",
-    logoUrl: "https://logo.clearbit.com/innovatecorp.com" // Fictional, replace with picsum if needed
+    logoUrl: "https://logo.clearbit.com/innovatecorp.com"
   },
   {
     headline: "IPO Alert: 'GreenLeaf Organics' Sets Price Range Amid Strong Investor Interest",
@@ -68,13 +76,12 @@ const mockRawArticlesData = [
   }
 ];
 
-
 // To ensure we don't reuse the same set of articles if refresh is hit multiple times
 let lastUsedIndex = -1;
 
 export const mockNewsService = {
-  getMockRawArticles: (count: number): Omit<NewsArticle, 'summary' | 'isLoadingSummary'>[] => {
-    const articlesToReturn: Omit<NewsArticle, 'summary' | 'isLoadingSummary'>[] = [];
+  getMockRawArticles: (count: number): MockArticleData[] => {
+    const articlesToReturn: MockArticleData[] = [];
     const availableArticles = mockRawArticlesData.length;
     
     for (let i = 0; i < count; i++) {
@@ -82,9 +89,7 @@ export const mockNewsService = {
       const articleData = mockRawArticlesData[lastUsedIndex];
       articlesToReturn.push({
         ...articleData,
-        id: `${generateId()}-${lastUsedIndex}`, // Ensure unique ID even if data repeats
-        // Replace fictional logo URLs with picsum if they don't resolve, or use a generic one.
-        // For now, keeping them as is. User can replace with valid URLs or picsum.
+        id: `${generateId()}-${lastUsedIndex}`,
         logoUrl: articleData.logoUrl || `https://picsum.photos/seed/${articleData.ticker || articleData.source}/50/50`
       });
     }

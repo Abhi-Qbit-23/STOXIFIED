@@ -1,6 +1,5 @@
-
 import React from 'react';
-import type { NewsArticle } from '../types';
+import type { NewsArticle } from '../types/news';
 import { TrashIcon } from './icons/TrashIcon';
 import { ShareIcon } from './icons/ShareIcon';
 import { ArrowUpRightIcon } from './icons/ArrowUpRightIcon';
@@ -16,7 +15,6 @@ export const SavedNewsScreen: React.FC<SavedNewsScreenProps> = ({ savedArticles,
     const shareData = {
       title: article.headline,
       text: `${article.headline}\n\n${article.summary}\n\nSource: ${article.source}`,
-      // url: article.originalUrl || window.location.href, // Ideally, you'd have an original article URL
     };
     try {
       if (navigator.share) {
@@ -59,10 +57,10 @@ export const SavedNewsScreen: React.FC<SavedNewsScreenProps> = ({ savedArticles,
           </div>
           <p className="text-sm text-neutral-300 mb-3 leading-relaxed">{article.summary}</p>
           <div className="flex justify-between items-center text-xs text-neutral-400 mb-3">
-            <span>{article.source} - {formatDate(article.timestamp)}</span>
+            <span>{article.source} - {formatDate(article.timestamp || article.scraped_at)}</span>
             <div>
               {article.ticker && <span className="bg-neutral-700 text-neutral-200 px-2 py-0.5 rounded-full text-xs font-mono mr-2">{article.ticker}</span>}
-              <span className="bg-primary-700 text-primary-100 px-2 py-0.5 rounded-full text-xs">{article.category.replace(/_/g, ' ')}</span>
+              {article.category && <span className="bg-primary-700 text-primary-100 px-2 py-0.5 rounded-full text-xs">{article.category.replace(/_/g, ' ')}</span>}
             </div>
           </div>
           <div className="flex space-x-2 mt-2">
