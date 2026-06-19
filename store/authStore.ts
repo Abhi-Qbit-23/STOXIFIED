@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { login, signup, fetchCurrentUser } from '../services/authApi';
+import { useNewsStore } from './newsStore';
 import type { User } from '../types/auth';
 
 interface AuthStore {
@@ -28,6 +29,8 @@ export const useAuthStore = create<AuthStore>()(
         try {
           const { access_token } = await login(username, password);
           const user = await fetchCurrentUser(access_token);
+          // Clear any previous user's data before setting new session
+          useNewsStore.getState().clearUserData();
           set({ token: access_token, user, isLoading: false });
         } catch (error) {
           set({
@@ -41,9 +44,10 @@ export const useAuthStore = create<AuthStore>()(
         set({ isLoading: true, error: null });
         try {
           await signup(username, email, password, fullName);
-          // Auto-login after signup
           const { access_token } = await login(username, password);
           const user = await fetchCurrentUser(access_token);
+          // Clear any previous user's data before setting new session
+          useNewsStore.getState().clearUserData();
           set({ token: access_token, user, isLoading: false });
         } catch (error) {
           set({
@@ -54,6 +58,7 @@ export const useAuthStore = create<AuthStore>()(
       },
 
       logout: () => {
+        useNewsStore.getState().clearUserData();
         set({ token: null, user: null, error: null });
       },
 

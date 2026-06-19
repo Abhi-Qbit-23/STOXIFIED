@@ -13,6 +13,7 @@ interface NewsStore {
   handleSwipe: (direction: 'left' | 'right', articleId: string) => void;
   handleUnsaveArticle: (articleId: string) => void;
   refreshNews: () => Promise<void>;
+  clearUserData: () => void;
 }
 
 export const useNewsStore = create<NewsStore>()(
@@ -64,6 +65,10 @@ export const useNewsStore = create<NewsStore>()(
       refreshNews: async () => {
         const { loadNews } = get();
         await loadNews();
+      },
+
+      clearUserData: () => {
+        set({ savedArticles: [], newsArticles: [], error: null });
       },
     }),
     {
