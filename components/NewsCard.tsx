@@ -6,10 +6,9 @@ import { LoadingSpinner } from './icons/LoadingSpinner';
 
 interface NewsCardProps {
   article: NewsArticle;
-  swipeDirection?: 'left' | 'right' | null;
 }
 
-export const NewsCard: React.FC<NewsCardProps> = ({ article, swipeDirection }) => {
+export const NewsCard: React.FC<NewsCardProps> = ({ article }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -21,22 +20,6 @@ export const NewsCard: React.FC<NewsCardProps> = ({ article, swipeDirection }) =
 
   return (
     <div className="absolute w-full h-full bg-neutral-800 rounded-xl shadow-xl overflow-hidden flex flex-col p-6 border border-neutral-700">
-      {/* Swipe direction overlay */}
-      {swipeDirection === 'right' && (
-        <div className="absolute inset-0 rounded-xl border-4 border-green-400 bg-green-400/10 flex items-start justify-start p-4 z-10 pointer-events-none">
-          <span className="text-green-400 font-black text-3xl border-4 border-green-400 rounded-lg px-3 py-1 rotate-[-15deg]">
-            SAVE
-          </span>
-        </div>
-      )}
-      {swipeDirection === 'left' && (
-        <div className="absolute inset-0 rounded-xl border-4 border-red-400 bg-red-400/10 flex items-start justify-end p-4 z-10 pointer-events-none">
-          <span className="text-red-400 font-black text-3xl border-4 border-red-400 rounded-lg px-3 py-1 rotate-[15deg]">
-            SKIP
-          </span>
-        </div>
-      )}
-
       <div className="flex-grow overflow-y-auto no-scrollbar">
         <h2 className="text-2xl font-bold text-primary-400 mb-3 leading-tight">
           <a href={article.url} target="_blank" rel="noopener noreferrer" className="hover:underline">

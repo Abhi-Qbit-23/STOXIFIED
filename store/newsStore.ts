@@ -1,19 +1,15 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { fetchNews } from '../services/api';
+import type { NewsQueryFilters } from '../services/api';
 import type { NewsArticle } from '../types/news';
-
-interface NewsFilters {
-  source?: string;
-  limit: number;
-}
 
 interface NewsStore {
   newsArticles: NewsArticle[];
   savedArticles: NewsArticle[];
   isLoading: boolean;
   error: string | null;
-  loadNews: (filters?: NewsFilters) => Promise<void>;
+  loadNews: (filters?: NewsQueryFilters) => Promise<void>;
   handleSwipe: (direction: 'left' | 'right', articleId: string) => void;
   handleUnsaveArticle: (articleId: string) => void;
   refreshNews: () => Promise<void>;
@@ -27,7 +23,7 @@ export const useNewsStore = create<NewsStore>()(
       isLoading: false,
       error: null,
 
-      loadNews: async (filters?: NewsFilters) => {
+      loadNews: async (filters?: NewsQueryFilters) => {
         set({ isLoading: true, error: null });
         try {
           const articles = await fetchNews(filters);
@@ -47,7 +43,6 @@ export const useNewsStore = create<NewsStore>()(
         if (!article) return;
 
         if (direction === 'right') {
-          // Avoid duplicates in saved
           const alreadySaved = savedArticles.some(a => a.id === articleId);
           set({
             savedArticles: alreadySaved ? savedArticles : [...savedArticles, article],
@@ -67,16 +62,8 @@ export const useNewsStore = create<NewsStore>()(
       },
 
       refreshNews: async () => {
-        set({ isLoading: true, error: null });
-        try {
-          const articles = await fetchNews();
-          set({ newsArticles: articles, isLoading: false });
-        } catch (error) {
-          set({
-            error: error instanceof Error ? error.message : 'Failed to refresh news',
-            isLoading: false,
-          });
-        }
+        const { loadNews } = get();
+        await loadNews();
       },
     }),
     {

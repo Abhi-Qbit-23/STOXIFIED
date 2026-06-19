@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL } from '../services/api';
+import type { NewsQueryFilters } from '../services/api';
 
 interface NewsFiltersProps {
-  onFilterChange: (filters: { source?: string; limit: number }) => void;
+  onFilterChange: (filters: NewsQueryFilters) => void;
 }
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 export const NewsFilters: React.FC<NewsFiltersProps> = ({ onFilterChange }) => {
   const [sources, setSources] = useState<string[]>([]);
@@ -14,15 +14,14 @@ export const NewsFilters: React.FC<NewsFiltersProps> = ({ onFilterChange }) => {
 
   useEffect(() => {
     const fetchSources = async () => {
+      setIsLoading(true);
+      setSourcesError(false);
       try {
-        setIsLoading(true);
-        setSourcesError(false);
         const response = await fetch(`${API_BASE_URL}/news/sources`);
         if (!response.ok) throw new Error('Failed to fetch sources');
         const data = await response.json();
         setSources(Array.isArray(data) ? data : []);
-      } catch (error) {
-        console.error('Error fetching sources:', error);
+      } catch {
         setSourcesError(true);
       } finally {
         setIsLoading(false);
@@ -45,7 +44,6 @@ export const NewsFilters: React.FC<NewsFiltersProps> = ({ onFilterChange }) => {
     onFilterChange({ limit: 20, source: value });
   };
 
-  // Don't render the filter if sources failed to load
   if (sourcesError || (!isLoading && sources.length === 0)) {
     return null;
   }
