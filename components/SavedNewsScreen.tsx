@@ -20,10 +20,13 @@ export const SavedNewsScreen: React.FC<SavedNewsScreenProps> = ({ savedArticles,
       if (navigator.share) {
         await navigator.share(shareData);
       } else {
-        // Fallback for browsers that don't support navigator.share
-        // This could open a modal with links or copy to clipboard
-        alert('Sharing is not supported on this browser, or a fallback is needed. Article details copied to console.');
-        console.log('Share Data:', shareData);
+        // Clipboard fallback
+        try {
+          await navigator.clipboard.writeText(`${shareData.title}\n\n${shareData.text}`);
+          alert('Article details copied to clipboard!');
+        } catch {
+          console.log('Share Data:', shareData);
+        }
       }
     } catch (error) {
       console.error('Error sharing:', error);

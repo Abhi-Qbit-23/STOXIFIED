@@ -74,14 +74,11 @@ const App: React.FC = () => {
           <>
             <NewsFilters onFilterChange={handleFilterChange} />
             {newsArticles.length > 0 && (
-              <SwipeDeck articles={newsArticles} onSwipe={handleSwipe} />
+              <SwipeDeck articles={newsArticles} onSwipe={handleSwipe} onRefresh={refreshNews} isLoading={isLoading} />
             )}
 
             {!isLoading && newsArticles.length === 0 && !error && (
-              <div className="flex-grow flex flex-col items-center justify-center text-neutral-500">
-                <p className="text-xl">No more news for now!</p>
-                <p>Check back later or refresh.</p>
-              </div>
+              <SwipeDeck articles={[]} onSwipe={handleSwipe} onRefresh={refreshNews} isLoading={isLoading} />
             )}
           </>
         )}
