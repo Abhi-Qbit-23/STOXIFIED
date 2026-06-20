@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>StockSwipe News</title>
+    <title>Stoxified</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -22,13 +22,13 @@
                 '900': '#0C4A6E',
               },
               neutral: {
-                '900': '#171717', // Dark background
-                '800': '#262626', // Slightly lighter for cards/elements
-                '700': '#404040', // Borders and secondary elements
+                '900': '#171717',
+                '800': '#262626',
+                '700': '#404040',
                 '600': '#525252',
-                '500': '#737373', // Placeholder text
-                '400': '#a3a3a3', // Default text, icons
-                '300': '#d4d4d4', // Lighter text
+                '500': '#737373',
+                '400': '#a3a3a3',
+                '300': '#d4d4d4',
                 '200': '#e5e5e5',
                 '100': '#f5f5f5',
               }
@@ -37,33 +37,13 @@
         }
       }
     </script>
-  <style>
-    /* Custom scrollbar hiding utility */
-    .no-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .no-scrollbar {
-      -ms-overflow-style: none;  /* IE and Edge */
-      scrollbar-width: none;  /* Firefox */
-    }
-  </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://ga.jspm.io/npm:react@19.0.0-rc.0/index.js",
-    "react-dom": "https://ga.jspm.io/npm:react-dom@19.0.0-rc.0/index.js",
-    "react-dom/client": "https://ga.jspm.io/npm:react-dom@19.0.0-rc.0/client.js",
-    "react/": "https://ga.jspm.io/npm:react@19.0.0-rc.0/",
-    "react-dom/": "https://ga.jspm.io/npm:react-dom@19.0.0-rc.0/",
-    "react-tinder-card": "https://esm.sh/react-tinder-card@^1.6.4",
-    "@google/genai": "https://esm.sh/@google/genai@^1.2.0"
-  }
-}
-</script>
-</head>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+  </head>
   <body class="bg-neutral-900">
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>
-</html><link rel="stylesheet" href="index.css">
-<script src="index.tsx" type="module"></script>
+</html>

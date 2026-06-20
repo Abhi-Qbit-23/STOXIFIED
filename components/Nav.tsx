@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { AppView } from '../App'; // Assuming AppView is exported from App.tsx
+import { AppView } from '../App';
 import { Squares2X2Icon } from './icons/Squares2X2Icon';
 import { BookmarkSquareIcon } from './icons/BookmarkSquareIcon';
 
